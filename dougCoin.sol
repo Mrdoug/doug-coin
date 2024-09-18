@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+// A partir do Solidity 0.8.0, overflow e underflow são revertidos automaticamente.
+// Não é necessário utilizar bibliotecas como SafeMath para proteção contra overflow/underflow.
+
 interface IERC20{
 
     //getters
@@ -43,7 +46,7 @@ contract DOUGToken is IERC20{
     }
 
     function transfer(address receiver, uint256 numTokens) public override returns (bool) {
-        require(numTokens <= balances[msg.sender]);
+        require(numTokens <= balances[msg.sender], "Insufficient balance");
         balances[msg.sender] = balances[msg.sender]-numTokens;
         balances[receiver] = balances[receiver]+numTokens;
         emit Transfer(msg.sender, receiver, numTokens);
@@ -61,8 +64,8 @@ contract DOUGToken is IERC20{
     }
 
     function transferFrom(address owner, address buyer, uint256 numTokens) public override returns (bool) {
-        require(numTokens <= balances[owner]);
-        require(numTokens <= allowed[owner][msg.sender]);
+        require(numTokens <= balances[owner], "Insufficient balance");
+        require(numTokens <= allowed[owner][msg.sender], "Allowance exceeded");
 
         balances[owner] = balances[owner]-numTokens;
         allowed[owner][msg.sender] = allowed[owner][msg.sender]-numTokens;
@@ -70,5 +73,13 @@ contract DOUGToken is IERC20{
         emit Transfer(owner, buyer, numTokens);
         return true;
     }
+
+    //TODO
+    //implementar funções de mint e burn para entender melhor como gerir o totalsuply
+    //name, symbol e decimals configurar via contructor (para um caso mais real de prod)
+
+// Não é necessário utilizar bibliotecas como SafeMath para proteção contra overflow/underflow.
+// Não é necessário utilizar bibliotecas como SafeMath para proteção contra overflow/underflow.
+
 
 }
